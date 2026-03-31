@@ -4,6 +4,13 @@ Incrementally syncs all Jira tickets — all fields — into a Snowflake table. 
 
 ---
 
+## Requirements
+
+- **Python 3.8 or higher** — check with `python --version`
+- **Windows users**: if `pip install` fails, first install [Microsoft Visual C++ Build Tools](https://visualstudio.microsoft.com/visual-cpp-build-tools/) — required by the Snowflake connector
+
+---
+
 ## Quick Start
 
 ### 1. Install dependencies

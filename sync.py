@@ -15,13 +15,18 @@ Schedule via Windows Task Scheduler:
     Trigger: On a schedule, every 15 minutes
 """
 
+import sys
+if sys.version_info < (3, 8):
+    print("ERROR: Python 3.8 or higher is required. You are running", sys.version)
+    sys.exit(1)
+
 import argparse
 import json
 import logging
-import sys
 from base64 import b64encode
 from datetime import datetime, timezone
 from pathlib import Path
+from typing import Dict, List, Optional
 
 import requests
 import snowflake.connector
@@ -65,7 +70,7 @@ def save_state(state: dict):
     SYNC_STATE.write_text(json.dumps(state, indent=2))
 
 
-def get_last_sync(state: dict, project_key: str) -> str | None:
+def get_last_sync(state: dict, project_key: str) -> Optional[str]:
     """Return ISO timestamp of last successful sync for this project, or None."""
     return state.get(project_key)
 
@@ -84,7 +89,7 @@ def jira_headers(email: str, token: str) -> dict:
     return {"Authorization": f"Basic {creds}", "Accept": "application/json"}
 
 
-def fetch_projects(cfg: dict) -> list[str]:
+def fetch_projects(cfg: dict) -> List[str]:
     """Return list of project keys. Uses config projects list if set, else all projects."""
     configured = cfg["sync"].get("projects", [])
     if configured:
@@ -102,7 +107,7 @@ def fetch_projects(cfg: dict) -> list[str]:
     return keys
 
 
-def fetch_issues(cfg: dict, project_key: str, updated_since: str | None) -> list[dict]:
+def fetch_issues(cfg: dict, project_key: str, updated_since: Optional[str]) -> List[dict]:
     """
     Fetch all issues for a project updated after `updated_since`.
     Uses cursor pagination (/rest/api/3/search/jql).
@@ -149,7 +154,7 @@ def fetch_issues(cfg: dict, project_key: str, updated_since: str | None) -> list
 # TRANSFORM  (flatten a raw Jira issue into a Snowflake-ready row)
 # ══════════════════════════════════════════════════════════════════════════════
 
-def extract_text(value) -> str | None:
+def extract_text(value) -> Optional[str]:
     """Pull a display string out of common Jira field structures."""
     if value is None:
         return None
@@ -349,7 +354,7 @@ def ensure_table(conn):
     log.info("Table JIRA_ISSUES ready.")
 
 
-def upsert_batch(conn, rows: list[dict]):
+def upsert_batch(conn, rows: List[dict]):
     """Write a batch of transformed rows to Snowflake."""
     cur = conn.cursor()
     cur.executemany(MERGE_SQL, rows)
