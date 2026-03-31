@@ -1,0 +1,20 @@
+{
+  "jira": {
+    "base_url": "https://yourcompany.atlassian.net",
+    "email": "your@email.com",
+    "token": "your_jira_api_token"
+  },
+  "snowflake": {
+    "account":   "YOUR_ACCOUNT_IDENTIFIER",
+    "user":      "YOUR_SNOWFLAKE_USERNAME",
+    "password":  "YOUR_SNOWFLAKE_PASSWORD",
+    "warehouse": "YOUR_WAREHOUSE",
+    "database":  "YOUR_DATABASE",
+    "schema":    "YOUR_SCHEMA",
+    "role":      "YOUR_ROLE"
+  },
+  "sync": {
+    "projects": [],
+    "batch_size": 100
+  }
+}
